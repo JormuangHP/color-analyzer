@@ -10,15 +10,22 @@ import base64
 def set_matplotlib_chinese_font():
     """设置 Matplotlib 中文字体"""
     try:
-        plt.rcParams['font.sans-serif'] = ['Microsoft YaHei']
+        # 优先使用思源黑体
+        plt.rcParams['font.sans-serif'] = ['Noto Sans CJK SC', 'Noto Sans CJK', 'WenQuanYi Micro Hei']
         plt.rcParams['axes.unicode_minus'] = False
-    except:
-        chinese_fonts = ['SimHei', 'SimSun', 'NSimSun', 'FangSong', 'KaiTi']
+        print("Font set to Noto Sans CJK")  # 调试信息
+    except Exception as e:
+        # 备选字体
+        chinese_fonts = ['Noto Sans CJK SC', 'Noto Sans CJK', 'WenQuanYi Micro Hei', 'WenQuanYi Zen Hei']
         for font in chinese_fonts:
-            if font in fm.findSystemFonts():
-                plt.rcParams['font.sans-serif'] = [font]
-                plt.rcParams['axes.unicode_minus'] = False
-                break
+            try:
+                if font in fm.findSystemFonts():
+                    plt.rcParams['font.sans-serif'] = [font]
+                    plt.rcParams['axes.unicode_minus'] = False
+                    print(f"Using font: {font}")  # 调试信息
+                    break
+            except Exception as e:
+                print(f"Error with font {font}: {str(e)}")  # 调试信息
 
 class ColorAnalyzer:
     def __init__(self, n_colors=5):
