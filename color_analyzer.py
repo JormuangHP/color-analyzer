@@ -6,15 +6,20 @@ import matplotlib.pyplot as plt
 import matplotlib.font_manager as fm
 import io
 import base64
+import sys
+import traceback
 
 def set_matplotlib_chinese_font():
     """设置 Matplotlib 中文字体"""
+    print("Starting font configuration...", file=sys.stderr)  # 添加日志
     try:
         # 优先使用思源黑体
         plt.rcParams['font.sans-serif'] = ['Noto Sans CJK SC', 'Noto Sans CJK', 'WenQuanYi Micro Hei']
         plt.rcParams['axes.unicode_minus'] = False
-        print("Font set to Noto Sans CJK")  # 调试信息
+        print("Font set to Noto Sans CJK", file=sys.stderr)  # 调试信息
+        print(f"Current font settings: {plt.rcParams['font.sans-serif']}", file=sys.stderr)  # 添加日志
     except Exception as e:
+        print(f"Primary font setting failed: {str(e)}", file=sys.stderr)  # 添加日志
         # 备选字体
         chinese_fonts = ['Noto Sans CJK SC', 'Noto Sans CJK', 'WenQuanYi Micro Hei', 'WenQuanYi Zen Hei']
         for font in chinese_fonts:
@@ -22,10 +27,10 @@ def set_matplotlib_chinese_font():
                 if font in fm.findSystemFonts():
                     plt.rcParams['font.sans-serif'] = [font]
                     plt.rcParams['axes.unicode_minus'] = False
-                    print(f"Using font: {font}")  # 调试信息
+                    print(f"Using fallback font: {font}", file=sys.stderr)  # 调试信息
                     break
             except Exception as e:
-                print(f"Error with font {font}: {str(e)}")  # 调试信息
+                print(f"Error with font {font}: {str(e)}", file=sys.stderr)  # 调试信息
 
 class ColorAnalyzer:
     def __init__(self, n_colors=5):
@@ -35,15 +40,19 @@ class ColorAnalyzer:
         
     def process_image(self, image):
         """处理上传的图片文件对象"""
+        print(f"Processing image: {image.filename}", file=sys.stderr)  # 添加日志
         try:
             img = Image.open(image)
+            print(f"Image mode: {img.mode}, Size: {img.size}", file=sys.stderr)  # 添加日志
             
             # 处理动图（如GIF），只取第一帧
             if hasattr(img, 'n_frames') and img.n_frames > 1:
+                print("Processing animated image", file=sys.stderr)  # 添加日志
                 img.seek(0)
             
             # 转换颜色模式
             if img.mode in ['RGBA', 'LA']:
+                print(f"Converting {img.mode} to RGB", file=sys.stderr)  # 添加日志
                 background = Image.new('RGB', img.size, (255, 255, 255))
                 if img.mode == 'RGBA':
                     background.paste(img, mask=img.split()[3])
@@ -51,23 +60,29 @@ class ColorAnalyzer:
                     background.paste(img, mask=img.split()[1])
                 img = background
             elif img.mode != 'RGB':
+                print(f"Converting {img.mode} to RGB", file=sys.stderr)  # 添加日志
                 img = img.convert('RGB')
             
             # 调整图片大小
             img.thumbnail((300, 300))
+            print(f"Resized image size: {img.size}", file=sys.stderr)  # 添加日志
             
             return np.array(img)
             
         except Exception as e:
+            print(f"Image processing error: {str(e)}", file=sys.stderr)  # 添加日志
+            print(traceback.format_exc(), file=sys.stderr)  # 添加堆栈跟踪
             raise ValueError(f"图片处理失败: {str(e)}")
 
     def get_colors(self, images):
         """分析多张图片的主色调和辅助色"""
+        print("Starting color analysis...", file=sys.stderr)  # 添加日志
         all_pixels = []
         error_files = []
         
         for image in images:
             try:
+                print(f"Processing image: {image.filename}", file=sys.stderr)  # 添加日志
                 img_array = self.process_image(image)
                 pixels = img_array.reshape(-1, 3)
                 valid_pixels = pixels[
@@ -76,12 +91,16 @@ class ColorAnalyzer:
                 ]
                 if len(valid_pixels) > 0:
                     all_pixels.append(valid_pixels)
+                    print(f"Valid pixels found: {len(valid_pixels)}", file=sys.stderr)  # 添加日志
             except Exception as e:
+                print(f"Error processing {image.filename}: {str(e)}", file=sys.stderr)  # 添加日志
                 error_files.append(image.filename)
         
         if not all_pixels:
+            print("No valid pixels found in any image", file=sys.stderr)  # 添加日志
             raise ValueError("没有有效的图片可以分析")
         
+        print("Analyzing colors...", file=sys.stderr)  # 添加日志
         all_pixels = np.vstack(all_pixels)
         
         # 获取主色调
@@ -93,6 +112,8 @@ class ColorAnalyzer:
         total_primary = sum(primary_counts.values())
         primary_percentages = {i: primary_counts[i]/total_primary 
                              for i in range(self.n_colors)}
+        
+        print("Primary colors analyzed", file=sys.stderr)  # 添加日志
         
         # 获取辅助色
         distances = np.zeros((len(all_pixels), len(primary_colors)))
@@ -111,7 +132,9 @@ class ColorAnalyzer:
             total_secondary = sum(secondary_counts.values())
             secondary_percentages = {i: secondary_counts[i]/total_secondary 
                                   for i in range(self.n_colors)}
+            print("Secondary colors analyzed", file=sys.stderr)  # 添加日志
         else:
+            print("No secondary colors found", file=sys.stderr)  # 添加日志
             secondary_colors = np.zeros((self.n_colors, 3))
             secondary_percentages = {i: 0 for i in range(self.n_colors)}
         
@@ -120,21 +143,22 @@ class ColorAnalyzer:
     def plot_colors_to_base64(self, primary_colors, primary_percentages, 
                              secondary_colors, secondary_percentages):
         """生成颜色分布图并转换为base64字符串"""
+        print("Starting plot generation...", file=sys.stderr)  # 添加日志
         import matplotlib
         matplotlib.use('Agg')
         
         # 设置中文字体
         set_matplotlib_chinese_font()
         
-        # 创建新图形
-        plt.clf()  # 清除当前图形
-        
-        # 创建图形和子图
-        fig = plt.figure(figsize=(12, 4))
-        ax1 = plt.subplot(211)  # 2行1列第1个
-        ax2 = plt.subplot(212)  # 2行1列第2个
-        
         try:
+            # 创建新图形
+            plt.clf()  # 清除当前图形
+            
+            # 创建图形和子图
+            fig = plt.figure(figsize=(12, 4))
+            ax1 = plt.subplot(211)  # 2行1列第1个
+            ax2 = plt.subplot(212)  # 2行1列第2个
+            
             # 绘制主色调
             current_height = 0
             sorted_primary = sorted(primary_percentages.items(), key=lambda x: x[1], reverse=True)
@@ -164,6 +188,8 @@ class ColorAnalyzer:
             # 调整布局
             plt.tight_layout(pad=2.0)
             
+            print("Plot generated successfully", file=sys.stderr)  # 添加日志
+            
             # 保存图形
             buf = io.BytesIO()
             plt.savefig(buf, format='png', bbox_inches='tight', dpi=100, 
@@ -174,5 +200,9 @@ class ColorAnalyzer:
             buf.seek(0)
             return base64.b64encode(buf.getvalue()).decode('utf-8')
             
+        except Exception as e:
+            print(f"Error generating plot: {str(e)}", file=sys.stderr)  # 添加日志
+            print(traceback.format_exc(), file=sys.stderr)  # 添加堆栈跟踪
+            raise
         finally:
             plt.close('all')  # 确保所有图形都被关闭
