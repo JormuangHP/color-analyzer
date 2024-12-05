@@ -11,27 +11,34 @@ import traceback
 
 def set_matplotlib_chinese_font():
     """设置 Matplotlib 中文字体"""
-    print("Starting font configuration...", file=sys.stderr)  # 保持原有的日志
+    print("Starting font configuration...", file=sys.stderr)
     try:
-        # 优先使用思源黑体
-        plt.rcParams['font.sans-serif'] = ['Noto Sans CJK SC', 'Noto Sans CJK', 'WenQuanYi Micro Hei']
-        plt.rcParams['font.family'] = ['sans-serif']  # 添加这行
+        # 设置字体优先级
+        plt.rcParams['font.family'] = ['sans-serif']
+        plt.rcParams['font.sans-serif'] = [
+            'Noto Sans CJK SC',
+            'WenQuanYi Micro Hei',
+            'WenQuanYi Zen Hei',
+            'Noto Sans Mono CJK SC',
+            'DejaVu Sans'
+        ]
         plt.rcParams['axes.unicode_minus'] = False
-        print("Font set to Noto Sans CJK", file=sys.stderr)  # 保持原有的日志
-        print(f"Current font settings: {plt.rcParams['font.sans-serif']}", file=sys.stderr)  # 保持原有的日志
+        
+        # 验证字体设置
+        from matplotlib.font_manager import findfont, FontProperties
+        font = FontProperties(family=['sans-serif'])
+        font_path = findfont(font)
+        print(f"Selected font path: {font_path}", file=sys.stderr)
+        
+        # 强制使用 Noto Sans CJK SC
+        if 'noto' not in font_path.lower():
+            font_path = '/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc'
+            plt.rcParams['font.sans-serif'] = ['Noto Sans CJK SC']
+            print(f"Forcing Noto Sans CJK SC font: {font_path}", file=sys.stderr)
+            
     except Exception as e:
-        print(f"Primary font setting failed: {str(e)}", file=sys.stderr)  # 保持原有的日志
-        # 备选字体
-        chinese_fonts = ['Noto Sans CJK SC', 'Noto Sans CJK', 'WenQuanYi Micro Hei', 'WenQuanYi Zen Hei']
-        for font in chinese_fonts:
-            try:
-                if font in fm.findSystemFonts():
-                    plt.rcParams['font.sans-serif'] = [font]
-                    plt.rcParams['axes.unicode_minus'] = False
-                    print(f"Using fallback font: {font}", file=sys.stderr)  # 保持原有的日志
-                    break
-            except Exception as e:
-                print(f"Error with font {font}: {str(e)}", file=sys.stderr)  # 保持原有的日志
+        print(f"Font configuration error: {str(e)}", file=sys.stderr)
+        print(traceback.format_exc(), file=sys.stderr)
 
 class ColorAnalyzer:
     def __init__(self, n_colors=5):
