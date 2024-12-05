@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="{{ lang }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ get_text('title') }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <div class="nav-bar">
+            <a href="/" class="nav-link">{{ get_text('title') }}</a>
+            <a href="/help?lang={{ lang }}" class="nav-link">{{ get_text('help') }}</a>
+            <select id="lang-select" onchange="changeLanguage(this.value)">
+                <option value="zh" {% if lang == 'zh' %}selected{% endif %}>中文</option>
+                <option value="en" {% if lang == 'en' %}selected{% endif %}>English</option>
+            </select>
+        </div>
+
+        <h1>{{ get_text('title') }}</h1>
+        
+        <div class="upload-area">
+            <div class="upload-tips">
+                <p>📁 {{ get_text('tips_folder') }}</p>
+                <p>💡 {{ get_text('tips_formats') }}</p>
+                <p>⚠️ {{ get_text('tips_notice') }}</p>
+            </div>
+            <form id="upload-form">
+                <div class="file-input-container">
+                    <input type="file" id="file-input" multiple accept=".jpg,.jpeg,.png,.gif,.bmp,.webp,.tiff,.heic" class="hidden-input">
+                    <label for="file-input" class="file-input-label">
+                        <span class="file-icon">📂</span>
+                        <span class="file-text">{{ get_text('select_files') }}</span>
+                    </label>
+                    <div id="file-count" class="file-count"></div>
+                </div>
+                <button type="submit" class="analyze-button">{{ get_text('analyze') }}</button>
+            </form>
+        </div>
+        
+        <div id="results" style="display: none;">
+            <!-- 结果显示区域 -->
+        </div>
+    </div>
+    
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script>
+    function changeLanguage(lang) {
+        window.location.href = '/?lang=' + lang;
+    }
+    </script>
+</body>
+</html>

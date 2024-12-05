@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="{{ lang }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ get_text('help_title') }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <div class="nav-bar">
+            <a href="/?lang={{ lang }}" class="nav-link">{{ get_text('title') }}</a>
+            <a href="/help?lang={{ lang }}" class="nav-link active">{{ get_text('help') }}</a>
+            <select id="lang-select" onchange="changeLanguage(this.value)">
+                <option value="zh" {% if lang == 'zh' %}selected{% endif %}>中文</option>
+                <option value="en" {% if lang == 'en' %}selected{% endif %}>English</option>
+            </select>
+        </div>
+
+        <div class="help-content">
+            <h1>{{ get_text('help') }}</h1>
+            
+            <section class="help-section">
+                <h2>{{ get_text('help_basic_title') }}</h2>
+                <ul>
+                    <li>{{ get_text('help_basic_1') }}</li>
+                    <li>{{ get_text('help_basic_2') }}</li>
+                    <li>{{ get_text('help_basic_3') }}</li>
+                </ul>
+            </section>
+
+            <section class="help-section">
+                <h2>{{ get_text('help_formats_title') }}</h2>
+                <ul>
+                    <li>{{ get_text('help_formats_1') }}</li>
+                    <li>{{ get_text('help_formats_2') }}</li>
+                    <li>{{ get_text('help_formats_3') }}</li>
+                    <li>{{ get_text('help_formats_4') }}</li>
+                    <li>{{ get_text('help_formats_5') }}</li>
+                    <li>{{ get_text('help_formats_6') }}</li>
+                    <li>{{ get_text('help_formats_7') }}</li>
+                </ul>
+            </section>
+
+            <section class="help-section">
+                <h2>{{ get_text('help_notes_title') }}</h2>
+                <ul>
+                    <li>{{ get_text('help_notes_1') }}</li>
+                    <li>{{ get_text('help_notes_2') }}</li>
+                    <li>{{ get_text('help_notes_3') }}</li>
+                    <li>{{ get_text('help_notes_4') }}</li>
+                </ul>
+            </section>
+        </div>
+    </div>
+    
+    <script>
+    function changeLanguage(lang) {
+        const currentPath = window.location.pathname;
+        window.location.href = currentPath + '?lang=' + lang;
+    }
+    </script>
+</body>
+</html>
