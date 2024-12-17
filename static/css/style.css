@@ -404,3 +404,26 @@ button[type="submit"]:hover {
         flex: 0 1 calc(50% - 8px);  /* 更小屏幕上每行显示2个 */
     }
 }
+
+footer {
+    background-color: #f1f1f1;
+    padding: 10px 0;
+    text-align: center;
+    position: relative;
+    bottom: 0;
+    width: 100%;
+}
+
+footer .footer-content p {
+    margin: 0;
+    font-size: 14px;
+}
+
+footer .footer-content a {
+    color: #333;
+    text-decoration: none;
+}
+
+footer .footer-content a:hover {
+    text-decoration: underline;
+}
