@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 TRANSLATIONS = {
     'zh': {
         'title': '图片颜色分析工具',
