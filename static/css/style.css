@@ -393,6 +393,7 @@ button[type="submit"]:hover {
 }
 
 /* 底部悬挂链接样式 */
+/* 注释掉这段代码
 .footer {
     position: fixed;
     bottom: 10px;  /* 你可以根据需要调整距离底部的距离 */
@@ -414,7 +415,7 @@ button[type="submit"]:hover {
 
 .footer a:hover {
     text-decoration: underline;
-}
+}*/
 
 
 /* 响应式布局：在小屏幕上调整显示数量 */
