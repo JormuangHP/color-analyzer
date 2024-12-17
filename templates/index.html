@@ -44,7 +44,9 @@
     </div>
 
     <footer>
-        <a href="https://beian.miit.gov.cn/" target="_blank">{{ get_text('icp_number') }}</a>
+        <div class="footer-content">
+            <p><a href="https://beian.miit.gov.cn/" target="_blank">{{ get_text('icp_number') }}</a></p>
+        </div>
     </footer>
     
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
