@@ -32,8 +32,7 @@ TRANSLATIONS = {
         'help_notes_2': '一次性选择所有需要分析的图片',
         'help_notes_3': '图片大小没有严格限制，但会自动调整以优化性能',
         'help_notes_4': '分析结果包括颜色值和所占比例',
-        'icp_number': '粤ICP备2024350160号',
-        'copyright': '2024 图片颜色分析工具 版权所有'
+        'icp_number': '粤ICP备2024350160号'
     },
     'en': {
         'title': 'Image Color Analyzer',
@@ -68,7 +67,6 @@ TRANSLATIONS = {
         'help_notes_3': 'No strict size limit, but images will be automatically resized for optimal performance',
         'help_notes_4': 'Results include color values and their percentages',
         'icp_number': '粤ICP备2024350160号'
-        'copyright': '2024 Picture Color Analysis Tool. All Rights Reserved.'
     }
 }
 
