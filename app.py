@@ -1,9 +1,14 @@
-from flask import Flask, render_template, request, jsonify
-from color_analyzer import ColorAnalyzer
-from translations import get_text
+from flask import Flask, render_template, request, jsonify, send_from_directory
+import os
+from color_analyzer import ColorAnalyzer  # 确保该模块存在
+from translations import get_text  # 确保该模块存在
 
+# 初始化 Flask 应用
 app = Flask(__name__)
-app.secret_key = '5ba9bde4d1f3f911095249565141623b'  # 请替换为你生成的密钥
+app.secret_key = '5ba9bde4d1f3f911095249565141623b'  # 请替换为您生成的密钥
+
+# 获取当前项目目录
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
 @app.route('/')
 def index():
@@ -83,14 +88,12 @@ def analyze():
         print(f"分析过程中出错: {str(e)}")
         return jsonify({'error': '分析过程中出错'}), 500
 
-import os  # 添加这一行
-
-# 新增静态文件服务路由指定 assets 目录的路径确保 assets 目录无论在服务器还是本地环境都可以正确定位。
+# 处理静态文件请求
 @app.route('/assets/<path:filename>')
 def serve_static(filename):
-    # 指定 assets 目录的完整路径
     assets_folder = os.path.join(BASE_DIR, 'assets')
     return send_from_directory(assets_folder, filename)
 
+# 启动 Flask 应用
 if __name__ == '__main__':
     app.run(debug=True)
