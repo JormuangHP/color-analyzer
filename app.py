@@ -83,5 +83,10 @@ def analyze():
         print(f"分析过程中出错: {str(e)}")
         return jsonify({'error': '分析过程中出错'}), 500
 
+# 新增静态文件服务路由
+@app.route('/assets/<path:filename>')
+def serve_static(filename):
+    return send_from_directory(app.static_folder, filename)
+
 if __name__ == '__main__':
     app.run(debug=True)
