@@ -83,10 +83,12 @@ def analyze():
         print(f"分析过程中出错: {str(e)}")
         return jsonify({'error': '分析过程中出错'}), 500
 
-# 新增静态文件服务路由
+# 新增静态文件服务路由指定 assets 目录的路径确保 assets 目录无论在服务器还是本地环境都可以正确定位。
 @app.route('/assets/<path:filename>')
 def serve_static(filename):
-    return send_from_directory(app.static_folder, filename)
+    # 指定 assets 目录的完整路径
+    assets_folder = os.path.join(BASE_DIR, 'assets')
+    return send_from_directory(assets_folder, filename)
 
 if __name__ == '__main__':
     app.run(debug=True)
